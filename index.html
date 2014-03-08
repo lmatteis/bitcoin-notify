@@ -1,0 +1,64 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>
+$(function() {
+
+    var url = 'https://script.google.com/macros/s/AKfycby9mqgNNuESDzQP1YPs1UcUYKZw7BfKQk88jZKxNvjTWdFrQS03/exec';
+
+    $('#submit_bitcoin').submit(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $cont = $('#cont');
+        $cont.text('loading');
+
+        $.getJSON(url + '?callback=?', { 
+            email: '', 
+            lat: $('#lat_bitcoin').val(),
+            lon: $('#lon_bitcoin').val(),
+            radius: $('#radius_bitcoin').val()
+        }, function(data) {
+            $cont.html('');
+            for(var i=0; i<data.foundPoints.length; i++) {
+                var point = data.foundPoints[i];
+                var $p = $('<p></p>');
+                for(var x in point) {
+                    $p.append('<b>' + x + '</b>');
+                    if(typeof point[x] == "object") {
+                        for(var y in point[x]) {
+                            $p.append('<b>' + y + '</b>: ');
+                            $p.append(point[x][y]);
+                            $p.append('<br>');
+                        }
+                    } else {
+                        $p.append(point[x]);
+                        $p.append('<br>');
+                    }
+                }
+                $cont.append($p);
+            }
+            
+
+        });
+    });
+
+
+});
+
+</script>
+<form method="get" id="submit_bitcoin">
+    <input type="email" placeholder="email" value="df1@sdf.com" id="email_bitcoin"/>
+    <br>
+    <input type="text" placeholder="lat" value="41.892916" id="lat_bitcoin"/>
+    <br>
+    <input type="text" placeholder="lon" value="12.482520" id="lon_bitcoin"/>
+    <br>
+    Radius in KM
+    <input type="text" placeholder="radius" id="radius_bitcoin" value="10"/>
+    <br>
+    <input type="submit" />
+
+</form>
+
+<div id="cont">
+
+</div>
+
