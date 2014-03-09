@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="theme/default/style.css" type="text/css">
 
 <script src="OpenLayers.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="jquery.min.js"></script>
 <script>
 $(function() {
 map = new OpenLayers.Map("demoMap");
@@ -12,7 +12,7 @@ map.zoomToMaxExtent();
 map.events.register("move", map, function() {
     var obj = arguments[0];
     if(obj.object.center) {
-        console.log(obj.object.center);
+        obj.object.center.transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
         $('#lat_bitcoin').val(obj.object.center.lat);
         $('#lon_bitcoin').val(obj.object.center.lon);
     }
