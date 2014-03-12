@@ -12,7 +12,7 @@ map.setCenter(lonlat);
 map.zoomTo(13);
 
 map.events.register("move", map, function() {
-    var center = map.getCenter();
+    var center = map.getCenter().transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection("EPSG:4326"));
     $('#lat_bitcoin').val(center.lat);
     $('#lon_bitcoin').val(center.lon);
 });
