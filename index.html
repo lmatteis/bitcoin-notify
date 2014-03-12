@@ -7,15 +7,14 @@
 $(function() {
 map = new OpenLayers.Map("demoMap");
 map.addLayer(new OpenLayers.Layer.OSM());
-map.zoomToMaxExtent();
+var lonlat = new OpenLayers.LonLat(12.482520,41.892916).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913"));
+map.setCenter(lonlat);
+map.zoomTo(13);
 
 map.events.register("move", map, function() {
-    var obj = arguments[0];
-    if(obj.object.center) {
-        obj.object.center.transform(new OpenLayers.Projection("EPSG:900913"), new OpenLayers.Projection("EPSG:4326"));
-        $('#lat_bitcoin').val(obj.object.center.lat);
-        $('#lon_bitcoin').val(obj.object.center.lon);
-    }
+    var center = map.getCenter();
+    $('#lat_bitcoin').val(center.lat);
+    $('#lon_bitcoin').val(center.lon);
 });
 
     var url = 'https://script.google.com/macros/s/AKfycby9mqgNNuESDzQP1YPs1UcUYKZw7BfKQk88jZKxNvjTWdFrQS03/exec';
@@ -27,31 +26,12 @@ map.events.register("move", map, function() {
         $cont.text('loading');
 
         $.getJSON(url + '?callback=?', { 
-            email: '', 
+            email: $('#email_bitcoin').val(), 
             lat: $('#lat_bitcoin').val(),
             lon: $('#lon_bitcoin').val(),
             radius: $('#radius_bitcoin').val()
         }, function(data) {
-            $cont.html('');
-            for(var i=0; i<data.foundPoints.length; i++) {
-                var point = data.foundPoints[i];
-                var $p = $('<p></p>');
-                for(var x in point) {
-                    $p.append('<b>' + x + '</b>');
-                    if(typeof point[x] == "object") {
-                        for(var y in point[x]) {
-                            $p.append('<b>' + y + '</b>: ');
-                            $p.append(point[x][y]);
-                            $p.append('<br>');
-                        }
-                    } else {
-                        $p.append(point[x]);
-                        $p.append('<br>');
-                    }
-                }
-                $cont.append($p);
-            }
-            
+            $cont.html(JSON.stringify(data));
 
         });
     });
@@ -61,7 +41,7 @@ map.events.register("move", map, function() {
 
 </script>
 <form method="get" id="submit_bitcoin">
-    <input type="email" placeholder="email" value="df1@sdf.com" id="email_bitcoin"/>
+    <input type="email" placeholder="email" value="" id="email_bitcoin"/>
     <br>
     <input type="text" placeholder="lat" value="41.892916" id="lat_bitcoin"/>
     <br>
@@ -74,7 +54,7 @@ map.events.register("move", map, function() {
 
 </form>
 
-<div id="demoMap" style="height:250px"></div>
+<div id="demoMap" style="width: 500px;height:500px"></div>
 
 <div id="cont">
 
