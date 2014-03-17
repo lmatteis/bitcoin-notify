@@ -1,3 +1,5 @@
+(function() {
+var $ = jQuery;
 $(function() {
 map = new OpenLayers.Map("demoMap");
 map.addLayer(new OpenLayers.Layer.OSM());
@@ -63,3 +65,4 @@ $('#radius_bitcoin').bind('input', function() {
 
 });
 
+});
