@@ -8,14 +8,37 @@ $(function() {
 map = new OpenLayers.Map("demoMap");
 map.addLayer(new OpenLayers.Layer.OSM());
 var lonlat = new OpenLayers.LonLat(12.482520,41.892916).transform(new OpenLayers.Projection("EPSG:4326"),new OpenLayers.Projection("EPSG:900913"));
+
+
 map.setCenter(lonlat);
 map.zoomTo(13);
 
-map.events.register("move", map, function() {
-    var center = map.getCenter().transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection("EPSG:4326"));
-    $('#lat_bitcoin').val(center.lat);
-    $('#lon_bitcoin').val(center.lon);
-});
+
+var circleLayer;
+map.events.register("moveend", map, function() {
+    var center = map.getCenter();
+
+    var centerClone = center.clone();
+    centerClone.transform(new OpenLayers.Projection("EPSG:900913"),new OpenLayers.Projection("EPSG:4326"));
+    $('#lat_bitcoin').val(centerClone.lat);
+    $('#lon_bitcoin').val(centerClone.lon);
+
+    if(circleLayer) {
+        map.removeLayer(circleLayer);
+    }
+
+    circleLayer = new OpenLayers.Layer.Vector("Overlay");
+    var circle = OpenLayers.Geometry.Polygon.createRegularPolygon(
+        new OpenLayers.Geometry.Point(center.lon, center.lat),
+        $('#radius_bitcoin').val() * 1000, // meters
+        40,
+        0
+    );
+    var feature = new OpenLayers.Feature.Vector(circle);
+    circleLayer.addFeatures([feature]);
+    map.addLayer(circleLayer);
+})
+
 
     var url = 'https://script.google.com/macros/s/AKfycby9mqgNNuESDzQP1YPs1UcUYKZw7BfKQk88jZKxNvjTWdFrQS03/exec';
 
@@ -48,7 +71,7 @@ map.events.register("move", map, function() {
     <input type="text" placeholder="lon" value="12.482520" id="lon_bitcoin"/>
     <br>
     Radius in KM
-    <input type="text" placeholder="radius" id="radius_bitcoin" value="10"/>
+    <input type="text" placeholder="radius" id="radius_bitcoin" value="2"/>
     <br>
     <input type="submit" />
 
