@@ -65,4 +65,4 @@ $('#radius_bitcoin').bind('input', function() {
 
 });
 
-});
+})();
