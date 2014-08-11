@@ -7,16 +7,12 @@ var httpget = function(u) {
     var connection = new URL(u).openConnection();
     connection.setConnectTimeout(0);
 
-    var answer = new StringBuffer();
-    var reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-    var line;
-    while ((line = reader.readLine()) != null) {
-        answer.append(line);
-    }
-    reader.close();
+    var inputStream = connection.getInputStream();
 
-    return answer.toString("UTF-8");
+    var writer = new StringWriter();
+    IOUtils.copy(inputStream, writer, "UTF-8");
 
+    return writer.toString();
 
 };
 
