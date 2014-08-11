@@ -43,7 +43,7 @@ $('#radius_bitcoin').bind('input', function() {
     
 });
 
-    var url = 'http://localhost:8080/subscribe';
+    var url = '/subscribe';
 
     $('#submit_bitcoin').submit(function(e) {
         e.preventDefault();

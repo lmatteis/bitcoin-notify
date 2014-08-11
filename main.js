@@ -145,7 +145,7 @@ function notifyChanges(request, response) {
 
 function sendEmail(email, subject, content) {
     var from = {
-        address: "guidobartu@gmail.com",
+        address: "bam.coincapital@gmail.com",
         personal: "Bitcoin Around Me"
     };
     var to = {
