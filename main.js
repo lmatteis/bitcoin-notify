@@ -283,7 +283,7 @@ function emailContent(user, foundPoints, firstNotification) {
                     ''];
   }
   var coordinateLink = 'http://www.openstreetmap.org/#map='+radiusToZoom(user.radius)+'/'+user.lat+'/'+user.lon;
-  emailStr.push('Coordinate: <a href="'+coordinateLink+'">'+coordinateLink+'</a>');
+  emailStr.push('Coordinate, lat: ' + user.lat +', long: '+user.lon);
   emailStr.push('Raggio: ' + user.radius +' km');
   emailStr.push('');
 

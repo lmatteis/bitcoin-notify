@@ -7,7 +7,7 @@ exports = {
 
         var out = new ByteArrayOutputStream();
         var gzip = new GZIPOutputStream(out);
-        gzip.write(str.getBytes());
+        gzip.write(str.getBytes('UTF-8'));
         gzip.close();
 
         return out.toByteArray();

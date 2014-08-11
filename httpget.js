@@ -15,7 +15,7 @@ var httpget = function(u) {
     }
     reader.close();
 
-    return answer.toString();
+    return answer.toString("UTF-8");
 
 
 };
