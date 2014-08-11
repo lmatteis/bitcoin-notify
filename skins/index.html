@@ -1,0 +1,22 @@
+<link rel="stylesheet" href="http://lmatteis.github.io/bitcoin-notify/theme/default/style.css" type="text/css">
+<script src="jquery.min.js"></script>
+<script src="OpenLayers.js"></script>
+<script src="bam.js"></script>
+<form method="get" id="submit_bitcoin">
+    <p>
+    Email<br>
+    <input type="email" placeholder="email" value="" id="email_bitcoin"/>
+    </p>
+    <p>
+    Centro raggio<br>
+    <input disabled="true" type="text" placeholder="lat" value="41.892916" id="lat_bitcoin"/>
+    <input disabled="true" type="text" placeholder="lon" value="12.482520" id="lon_bitcoin"/>
+    </p>
+    <p>
+    Grandezza raggio in KM<br>
+    <input type="text" value="15" placeholder="raggio in KM" id="radius_bitcoin" />
+    </p>
+    <input type="submit" value="Attiva BAM Alert" />
+    <p id="cont" style="color:red; visibility:none; height: 20px;"></p>
+</form>
+<div id="demoMap" style="width: 100%;height:500px"></div>
