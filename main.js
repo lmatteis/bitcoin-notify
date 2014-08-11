@@ -7,7 +7,8 @@ var emailsend = require('./email.js');
 apejs.urls = {
     "/": {
         get: function(request, response, query) {
-            print(request, response).html("woo");
+            var clientHtml = render("skins/index.html");
+            return print(request, response).html(clientHtml);
 
         }
     },
@@ -146,14 +147,6 @@ function notifyChanges() {
     
    
     // store the new data
-    storeObj(doc, liveBitcoinObj);
-      select("obj")
-        .add({ objid: "obj"
-        .find({ objid: "obj" })
-        .limit(1)
-        .each(function(id) {
-            content = this.content;
-        });
   }
   
 }
