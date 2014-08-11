@@ -252,7 +252,7 @@ select.fn = {
                 // putting an empty string in front of it
                 // casts it to a JavaScript string even if it's
                 // more of a complicated type
-                ret[key] = ""+value;
+                ret[key] = value;
             }
 
             // always try to parse this string to see if it's valid JSON

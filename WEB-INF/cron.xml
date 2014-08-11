@@ -3,7 +3,7 @@
   <cron>
     <url>/notify-changes</url>
     <description>Mail out a weekly report of the changes</description>
-    <schedule>every monday 08:30</schedule>
+    <schedule>every 30 minutes</schedule>
     <timezone>Europe/Rome</timezone>
   </cron>
 </cronentries>

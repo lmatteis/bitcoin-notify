@@ -46,7 +46,7 @@ apejs.urls = {
             select("user")
                 .add(user);
 
-            return print(request, response).json({"msg": "You were successfully subscribed"});
+            return print(request, response).json({"msg": "Registrazione effettuata. Entro trenta minuti riceverai il primo alert."});
         }
     },
     "/unsubscribe" : {
@@ -88,6 +88,9 @@ function notifyChanges(request, response) {
         var user = this;
         var foundPoints = [];
         var localDiff = diff;
+
+        user.firstNotification = user.firstNotification.booleanValue();
+
         
         if(user.firstNotification) { // send all the points in his radius
           localDiff = liveBitcoinObj.elements;

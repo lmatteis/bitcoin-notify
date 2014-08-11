@@ -10,7 +10,7 @@ var email = {
         msg.addRecipient(Message.RecipientType.TO,
                          new InternetAddress(to.address, to.personal));
         msg.setSubject(subject);
-        msg.setText(msgBody);
+        msg.setContent(msgBody, "text/html; charset=utf-8");
         Transport.send(msg);
     }
 };
