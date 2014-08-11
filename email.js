@@ -2,7 +2,7 @@ importPackage(javax.mail);
 importPackage(javax.mail.internet);
 var email = {
     send: function(from, to, subject, msgBody) {
-        var props = new Properties();
+        var props = new java.util.Properties();
         var session = Session.getDefaultInstance(props, null);
 
         var msg = new MimeMessage(session);

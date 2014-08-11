@@ -3,6 +3,7 @@ var select = require('select.js');
 
 var httpget = require('./httpget.js');
 var emailsend = require('./email.js');
+var gzip = require('./gzip.js');
 
 apejs.urls = {
     "/": {
@@ -10,6 +11,11 @@ apejs.urls = {
             var clientHtml = render("skins/index.html");
             return print(request, response).html(clientHtml);
 
+        }
+    },
+    "/notify-changes": {
+        get: function(request, response, query) {
+            notifyChanges(request, response);
         }
     },
     "/subscribe" : {
@@ -27,64 +33,43 @@ apejs.urls = {
             // store user
             var user = { 
                 type: 'user',
-                email: email, 
+                email: ''+email, 
                 lat: parseFloat(lat), 
                 lon: parseFloat(lon), 
                 radius: parseFloat(radius),
                 firstNotification: true,
-                date: new Date().getTime(),
+                date: new java.util.Date(),
                 token: tokenGenerator()
             };
 
-            // sarva
+            // store user
             select("user")
                 .add(user);
 
-            notifyChanges();
+            return print(request, response).json({"msg": "You were successfully subscribed"});
+        }
+    },
+    "/unsubscribe" : {
+        get: function(request, response) {
+            var email = request.getParameter('email');
+            var token = request.getParameter('token');
 
-            return print(request, response).json(user);
-        }
-    },
-    "/person/([a-zA-Z0-9_]+)" : {
-        get: function(request, response, q, matches) {
-            var id     = parseInt(matches[1], 10);
-            select("person")
-                .find(id)
-                .each(function(id) {
-                    var person = mustache.to_html(render("skins/person.html"), {
-                        id: id,
-                        name: this["name"],
-                        age: this["age"],
-                        gender: this["gender"]
-                    });
-                    print(request, response).html(person);
-                });
-        }
-    },
-    "/edit/([0-9]+)" : {
-        get: function(request, response, q, matches) {
-            var id  = parseInt(matches[1], 10);
-            select("person")
-                .find()
-                .attr({name: "Fuck"});
-            response.sendRedirect("/");
-        }
-    },
-    "/delete/([0-9]+)" : {
-        get: function(request, response, q, matches) {
-            var id  = parseInt(matches[1], 10);
-            select("person")
-                .find(id)
+            select('user')
+                .find({ email: email, token: token })
                 .del();
-            response.sendRedirect("/");
+              
+            return print(request, response).json({msg: "You were successfully unsuscribed"});
         }
     }
+            
 };
 
 
-function notifyChanges() {
+function notifyChanges(request, response) {
   
-  var liveBitcoinObj = getLiveBitcoinObj();
+  var live = getLiveBitcoinObjAndString();
+  var liveBitcoinObj = live[0];
+  var liveBitcoinStr = live[1];
   
   var storedObj = getStoredObj();
   
@@ -142,12 +127,19 @@ function notifyChanges() {
 
 
 
+    if(diff.length) { // there are differences!
 
-  if(diff.length) { // there are differences!
-    
-   
-    // store the new data
-  }
+        // store the new data
+        var bytes = gzip.compress(liveBitcoinStr);
+
+        var blob = new com.google.appengine.api.datastore.Blob(bytes);
+
+
+        select("obj").add({
+            content: blob,
+            date: new java.util.Date()
+        });
+    }
   
 }
 
@@ -165,7 +157,7 @@ function sendEmail(email, subject, content) {
 
 }
 
-function getLiveBitcoinObj() {
+function getLiveBitcoinObjAndString() {
   var url = 'http://overpass.osm.rambler.ru/cgi/interpreter?data=[out:json];(node[%22payment:bitcoin%22=yes];%3E;way[%22payment:bitcoin%22=yes];%3E;relation[%22payment:bitcoin%22=yes];%3E;);out;';
 
   var response = httpget(url);
@@ -173,20 +165,30 @@ function getLiveBitcoinObj() {
   // parse the JSON
   if(response) {
     var obj = JSON.parse(response);
-    return obj;
+    return [obj, response];
   } else {
-    return {};
+    return [{}, ''];
   }
 }
 
-function getStoredObj(doc) {
-  var content = false;
-  select("obj")
-    .find({ objid: "obj" })
-    .limit(1)
-    .each(function(id) {
-        content = this.content;
-    });
+function getStoredObj() {
+    var content = false;
+
+    var query = new com.google.appengine.api.datastore.Query('obj');
+    query = query.addSort("date", com.google.appengine.api.datastore.Query.SortDirection.DESCENDING);
+    var datastoreService = DatastoreServiceFactory.getDatastoreService();
+    var preparedQuery = datastoreService.prepare(query);
+
+    var fetchOptions = FetchOptions.Builder.withDefaults();
+    fetchOptions = fetchOptions.limit(1);
+
+
+    var result = preparedQuery.asList(fetchOptions).toArray();
+    for(var i=0; i<result.length; i++) {
+        var decompressed = gzip.decompress(result[i].getProperty("content").getBytes());
+
+        content = decompressed;
+    }
 
   if(content) {
     try {
