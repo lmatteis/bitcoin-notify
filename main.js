@@ -60,6 +60,28 @@ apejs.urls = {
               
             return print(request, response).json({msg: "You were successfully unsuscribed"});
         }
+    },
+    "/get-stored-obj" : {
+        get: function(request, response) {
+            var storedObj = getStoredObj();
+
+            var content = false;
+
+            var query = new com.google.appengine.api.datastore.Query('obj');
+            query = query.addSort("date", com.google.appengine.api.datastore.Query.SortDirection.DESCENDING);
+            var datastoreService = DatastoreServiceFactory.getDatastoreService();
+            var preparedQuery = datastoreService.prepare(query);
+
+            var fetchOptions = FetchOptions.Builder.withDefaults();
+            fetchOptions = fetchOptions.limit(1);
+
+            var result = preparedQuery.asList(fetchOptions).toArray();
+            for(var i=0; i<result.length; i++) {
+                print(request, response).json({"date": ''+result[i].getProperty("date") });
+
+            }
+        }
+
     }
             
 };
@@ -276,7 +298,7 @@ function emailContent(user, foundPoints, firstNotification) {
                     '',
                   'Siamo ancora in versione beta quindi segnalaci ogni anomalia che riscontri e provvederemo a migliorare il servizio.',
                   '',
-                  'Con questa prima email ricevi la lista dei locali che accettano bitcoin come forma di pagamento nel raggio da te prescelto. Ogni nuovo locale che dovesse aggiungersi in Open Street Map verrà rilevato da BAM che ti invierà un allerta cosi rimarrai sempre aggiornato sui locali a te più vicini che accettano bitcoin.',
+                  'Con questa prima email ricevi la lista dei locali che accettano bitcoin come forma di pagamento nel raggio da te prescelto. Ogni nuovo locale che dovesse aggiungersi in Open Street Map verrà rilevato da BAM che ti invierà un\'allerta cosi rimarrai sempre aggiornato sui locali a te più vicini che accettano bitcoin.',
                   ''];
   } else {
     var emailStr = ['Ci sono nuovi locali che accettano bitcoin nelle tue vicinanze ecco i link per visualizzarli su OpenStreetMap:', 
